@@ -11,6 +11,14 @@ class Item(BaseModel):
     brand: Optional[str] = None
 
 
+class UpdateItem(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None
+    brand: Optional[str] = None
+
+
+
+
 my_data = {
     1:{
         "name":"Kula",
@@ -52,7 +60,22 @@ def create_item(item_id: int, item: Item):
     if item_id in my_data:
         return {"Error":"Item ID alredy exists"}
 
-    my_data[item_id] = {"name": item.name, "brand": item.brand, "price": item.price}
+    my_data[item_id] = item
 
     return my_data[item_id]
+
+@app.put("/update-item/{item_id}")
+def update_item(item_id: int, item: UpdateItem):
+    if item_id not in my_data:
+        return {"Error":"Idem ID does'n exist"}
+    my_data[item_id].update(item)
+    return my_data[item_id]
+
+
+@app.delete("/delete-item")
+def delete_item(item_id: int = Query(..., description="the id of the item to delete ")):
+    if item_id not in my_data:
+        return {"Error":"ID does not exist"}
+    del my_data[item_id]
+    return {"Success": "Item deleted!"}
     
